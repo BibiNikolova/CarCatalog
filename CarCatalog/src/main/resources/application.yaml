@@ -7,10 +7,6 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: 'false'
-#  mvc:
-#    hiddenmethod:
-#      filter:
-#        enabled: 'true'
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
     password: ${DB_PASS}

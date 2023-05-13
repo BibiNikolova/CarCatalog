@@ -46,6 +46,18 @@ public class DbSeeder implements CommandLineRunner {
 
     }
 
+    private void initBrand() {
+        if (brandRepo.count() == 0) {
+
+            Arrays.stream(BrandName.values())
+                    .forEach(b -> {
+                        Brand brand = new Brand();
+                        brand.setBrandName(b);
+                        this.brandRepo.save(brand);
+                    });
+        }
+    }
+
     private void initTransmission() {
         if (transmissionRepo.count() == 0) {
 
@@ -65,6 +77,11 @@ public class DbSeeder implements CommandLineRunner {
                     .forEach(m -> {
                         Model model = new Model();
                         model.setModelName(m);
+                        switch (m){
+                            case X4 -> model.setBrand(brandRepo.findByBrandName(BrandName.BMW));
+                            case Q7 -> model.setBrand(brandRepo.findByBrandName(BrandName.AUDI));
+                            case Q5-> model.setBrand(brandRepo.findByBrandName(BrandName.VW));
+                        }
                         this.modelRepo.save(model);
                     });
         }
@@ -78,18 +95,6 @@ public class DbSeeder implements CommandLineRunner {
                         FuelType fuelType = new FuelType();
                         fuelType.setFuelTypeName(f);
                         this.fuelTypeRepo.save(fuelType);
-                    });
-        }
-    }
-
-    private void initBrand() {
-        if (brandRepo.count() == 0) {
-
-            Arrays.stream(BrandName.values())
-                    .forEach(b -> {
-                        Brand brand = new Brand();
-                        brand.setBrandName(b);
-                        this.brandRepo.save(brand);
                     });
         }
     }

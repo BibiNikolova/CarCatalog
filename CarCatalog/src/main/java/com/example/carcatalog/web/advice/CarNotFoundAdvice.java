@@ -1,4 +1,4 @@
-package com.example.carcatalog.web;
+package com.example.carcatalog.web.advice;
 
 import com.example.carcatalog.exception.CarNotFoundException;
 import org.springframework.http.HttpStatus;

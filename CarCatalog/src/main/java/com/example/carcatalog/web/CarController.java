@@ -2,6 +2,7 @@ package com.example.carcatalog.web;
 
 import com.example.carcatalog.model.dto.CarSearchDTO;
 import com.example.carcatalog.model.dto.CreateUpdateCarDTO;
+import com.example.carcatalog.model.entity.Car;
 import com.example.carcatalog.service.CarService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class CarController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CreateUpdateCarDTO>> getAllCars() {
+    public ResponseEntity<List<CarSearchDTO>> getAllCars() {
 
         return ResponseEntity.ok(carService.getAllCars());
     }
@@ -52,7 +53,7 @@ public class CarController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<CreateUpdateCarDTO>> searchProducts(@RequestParam("query") String query){
-        return ResponseEntity.ok(carService.searchCars(query));
+    public ResponseEntity<List<CarSearchDTO>> searchCars(@RequestParam ("query") String query){
+        return ResponseEntity.ok(carService.getSearch(query));
     }
 }
