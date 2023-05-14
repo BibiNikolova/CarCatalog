@@ -1,33 +1,26 @@
 package com.example.carcatalog.service;
 
 import com.example.carcatalog.exception.CarNotFoundException;
-import com.example.carcatalog.model.dto.CarSearchDTO;
-import com.example.carcatalog.model.dto.CreateUpdateCarDTO;
+import com.example.carcatalog.model.dto.CarDTO;
+import com.example.carcatalog.model.dto.SearchDTO;
+import com.example.carcatalog.model.dto.ViewDTO;
 import com.example.carcatalog.model.entity.Car;
 import com.example.carcatalog.model.entity.FuelType;
 import com.example.carcatalog.model.entity.Model;
 import com.example.carcatalog.model.entity.Transmission;
-import com.example.carcatalog.repository.*;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import com.example.carcatalog.repository.CarRepo;
+import com.example.carcatalog.repository.FuelTypeRepo;
+import com.example.carcatalog.repository.ModelRepo;
+import com.example.carcatalog.repository.TransmissionRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class CarService {
-
-    private static final ExampleMatcher SEARCH_CONDITIONS_MATCH_ANY = ExampleMatcher
-            .matchingAny()
-            .withMatcher("modelName", ExampleMatcher.GenericPropertyMatchers.exact())
-            .withMatcher("transmissionName", ExampleMatcher.GenericPropertyMatchers.exact())
-            .withMatcher("fuelTypeName", ExampleMatcher.GenericPropertyMatchers.exact())
-            .withMatcher("price", ExampleMatcher.GenericPropertyMatchers.exact())
-            .withMatcher("registrationDate", ExampleMatcher.GenericPropertyMatchers.exact())
-            .withIgnorePaths("vinNumber", "remarks");
-
-
     private final FuelTypeRepo fuelTypeRepo;
     private final ModelRepo modelRepo;
     private final TransmissionRepo transmissionRepo;
@@ -40,7 +33,15 @@ public class CarService {
         this.carRepo = carRepo;
     }
 
-    public long createCar(CreateUpdateCarDTO newCar) {
+    public List<ViewDTO> getAll() {
+        return carRepo.findAll()
+                .stream()
+                .sorted((f, s) -> s.getPrice().compareTo(f.getPrice()))
+                .map(this::map)
+                .toList();
+    }
+
+    public long create(CarDTO newCar) {
 
         Car car = Car.builder()
                 .vinNumber(newCar.getVinNumber())
@@ -55,7 +56,7 @@ public class CarService {
         return this.carRepo.save(car).getId();
     }
 
-    public CreateUpdateCarDTO updateCar(Long id, CreateUpdateCarDTO updatedCar) {
+    public ViewDTO update(Long id, CarDTO updatedCar) {
         Car car = carRepo.findById(id).orElseThrow(() -> new CarNotFoundException(id));
         car.setVinNumber(updatedCar.getVinNumber());
         car.setModel(getModelName(updatedCar));
@@ -75,61 +76,58 @@ public class CarService {
         carRepo.deleteById(id);
     }
 
-    private CreateUpdateCarDTO map(Car car) {
+    private ViewDTO map(Car car) {
 
-        return CreateUpdateCarDTO.builder()
+        return ViewDTO.builder()
                 .id(car.getId())
-                .modelName(car.getModel().getModelName())
+                .brand(car.getModel().getBrand())
+                .model(car.getModel())
                 .remarks(car.getRemarks())
                 .price(car.getPrice())
-                .fuelTypeName(car.getFuelType().getFuelTypeName())
+                .fuelType(car.getFuelType())
                 .registrationDate(car.getRegistrationDate())
-                .transmissionName(car.getTransmission().getTransmissionName())
+                .transmission(car.getTransmission())
                 .build();
     }
 
-    public List<CarSearchDTO> getAllCars() {
-        return carRepo.findAll()
-                .stream()
-                .sorted((f, s) -> s.getPrice().compareTo(f.getPrice()))
-                .map(this::mapToSearch)
-                .toList();
-    }
-
-    private FuelType getFuelTypeName(CreateUpdateCarDTO car) {
+    private FuelType getFuelTypeName(CarDTO car) {
         return this.fuelTypeRepo.findByFuelTypeName(car.getFuelTypeName()).orElseThrow();
     }
 
-    private Transmission getTransmissionName(CreateUpdateCarDTO car) {
+    private Transmission getTransmissionName(CarDTO car) {
         return this.transmissionRepo.findByTransmissionName(car.getTransmissionName()).orElseThrow();
     }
 
-    private Model getModelName(CreateUpdateCarDTO car) {
+    private Model getModelName(CarDTO car) {
         return this.modelRepo.findByModelName(car.getModelName()).orElseThrow();
     }
 
-    public List<CarSearchDTO> getSearch(String query) {
+    public List<ViewDTO> getSearch(SearchDTO searched) {
 
-        Car car = carRepo.searchCarSQL(query).orElseThrow();
+        Stream<Car> stream = this.carRepo.findAll().stream();
 
-        return carRepo.findAll(Example.of(car, SEARCH_CONDITIONS_MATCH_ANY))
-                .stream()
+        if (searched.getModelName() != null) {
+            stream = stream.filter(car -> car.getModel().getModelName().equals(searched.getModelName()));
+        }
+        if (searched.getRegistrationDate() != null) {
+            stream = stream.filter(car -> car.getRegistrationDate().isAfter(searched.getRegistrationDate()));
+        }
+        if (searched.getTransmissionName() != null) {
+            stream = stream.filter(car -> car.getTransmission().getTransmissionName().equals(searched.getTransmissionName()));
+        }
+        if (searched.getPrice() != null) {
+            stream = stream.filter(car -> car.getPrice().compareTo(searched.getPrice()) < 0);
+        }
+        if (searched.getFuelTypeName() != null) {
+            stream = stream.filter(car -> car.getFuelType().getFuelTypeName().equals(searched.getFuelTypeName()));
+        }
+        if (searched.getBrandName() != null) {
+            stream = stream.filter(car -> car.getModel().getBrand().getBrandName().equals(searched.getBrandName()));
+        }
+        return stream
+                .map(this::map)
                 .sorted((f, s) -> s.getPrice().compareTo(f.getPrice()))
-                .map(this::mapToSearch)
                 .toList();
-    }
-
-    private CarSearchDTO mapToSearch(Car car) {
-
-        return CarSearchDTO.builder()
-                .id(car.getId())
-                .modelName(car.getModel().getModelName())
-                .brandName(car.getModel().getBrand().getBrandName())
-                .price(car.getPrice())
-                .fuelTypeName(car.getFuelType().getFuelTypeName())
-                .registrationDate(car.getRegistrationDate())
-                .transmissionName(car.getTransmission().getTransmissionName())
-                .build();
     }
 
 }

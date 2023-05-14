@@ -20,7 +20,7 @@ public class FuelType {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private FuelTypeName fuelTypeName;
 
 }

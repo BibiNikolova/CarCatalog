@@ -5,7 +5,9 @@ import com.example.carcatalog.model.enums.BrandName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface BrandRepo extends JpaRepository<Brand, Long> {
-    Brand findByBrandName(BrandName name);
+    Optional<Brand> findByBrandName(BrandName name);
 }

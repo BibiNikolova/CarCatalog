@@ -1,10 +1,11 @@
 package com.example.carcatalog.web;
 
-import com.example.carcatalog.model.dto.CarSearchDTO;
-import com.example.carcatalog.model.dto.CreateUpdateCarDTO;
-import com.example.carcatalog.model.entity.Car;
+import com.example.carcatalog.model.dto.CarDTO;
+import com.example.carcatalog.model.dto.SearchDTO;
+import com.example.carcatalog.model.dto.ViewDTO;
 import com.example.carcatalog.service.CarService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -21,39 +22,39 @@ public class CarController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CarSearchDTO>> getAllCars() {
+    public ResponseEntity<List<ViewDTO>> getAll() {
 
-        return ResponseEntity.ok(carService.getAllCars());
+        return ResponseEntity.ok(carService.getAll());
     }
 
-    @PostMapping
-    public ResponseEntity<CreateUpdateCarDTO> createCar(@RequestBody CreateUpdateCarDTO newCar,
-                                                        UriComponentsBuilder uriComponentsBuilder) {
+    @PostMapping("/add")
+    public ResponseEntity<ViewDTO> create(@RequestBody @Validated CarDTO newCar,
+                                         UriComponentsBuilder uriComponentsBuilder) {
 
-        long newCarId = carService.createCar(newCar);
+        long newCarId = carService.create(newCar);
 
         return ResponseEntity
-                .created(uriComponentsBuilder.path("/api/cars/{id}").build(newCarId))
+                .created(uriComponentsBuilder.path("/api/cars/add/{id}").build(newCarId))
                 .build();
 
     }
     @PutMapping("/{id}")
-    public ResponseEntity<CreateUpdateCarDTO> updateCar(@PathVariable("id") Long id,
-                                                        @RequestBody CreateUpdateCarDTO updatedCar) {
+    public ResponseEntity<ViewDTO> update(@PathVariable("id") Long id,
+                                            @RequestBody @Validated CarDTO updatedCar) {
 
-       return ResponseEntity.ok(carService.updateCar(id, updatedCar));
+       return ResponseEntity.ok(carService.update(id, updatedCar));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CarSearchDTO> deleteCar(@PathVariable("id") Long id) {//TODO: choose DTO
+    public ResponseEntity<ViewDTO> delete(@PathVariable("id") Long id) {//TODO: choose DTO
 
         carService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<CarSearchDTO>> searchCars(@RequestParam ("query") String query){
-        return ResponseEntity.ok(carService.getSearch(query));
+    @PostMapping("/search")
+    public ResponseEntity<List<ViewDTO>> search(@RequestBody @Validated SearchDTO searchDTO){
+        return ResponseEntity.ok(carService.getSearch(searchDTO));
     }
 }

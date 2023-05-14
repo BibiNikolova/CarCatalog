@@ -19,9 +19,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CarSearchDTO {
-
-    private Long id;
+public class SearchDTO {
     private ModelName modelName;
     private BrandName brandName;
     @Positive(message = "Price should be positive.")

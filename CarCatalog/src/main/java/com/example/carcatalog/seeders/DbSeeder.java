@@ -78,9 +78,9 @@ public class DbSeeder implements CommandLineRunner {
                         Model model = new Model();
                         model.setModelName(m);
                         switch (m){
-                            case X4 -> model.setBrand(brandRepo.findByBrandName(BrandName.BMW));
-                            case Q7 -> model.setBrand(brandRepo.findByBrandName(BrandName.AUDI));
-                            case Q5-> model.setBrand(brandRepo.findByBrandName(BrandName.VW));
+                            case X4 -> model.setBrand(brandRepo.findByBrandName(BrandName.BMW).orElseThrow());
+                            case Q7 -> model.setBrand(brandRepo.findByBrandName(BrandName.AUDI).orElseThrow());
+                            case Q5-> model.setBrand(brandRepo.findByBrandName(BrandName.VW).orElseThrow());
                         }
                         this.modelRepo.save(model);
                     });

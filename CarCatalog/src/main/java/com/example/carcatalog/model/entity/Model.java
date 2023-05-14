@@ -19,7 +19,7 @@ public class Model {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private ModelName modelName;
     @ManyToOne
     private Brand brand;
