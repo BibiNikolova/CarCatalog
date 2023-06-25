@@ -4,9 +4,7 @@ import com.example.carcatalog.model.entity.Brand;
 import com.example.carcatalog.model.entity.FuelType;
 import com.example.carcatalog.model.entity.Model;
 import com.example.carcatalog.model.entity.Transmission;
-import com.example.carcatalog.model.enums.BrandName;
 import com.example.carcatalog.model.enums.FuelTypeName;
-import com.example.carcatalog.model.enums.ModelName;
 import com.example.carcatalog.model.enums.TransmissionName;
 import com.example.carcatalog.repository.BrandRepo;
 import com.example.carcatalog.repository.FuelTypeRepo;
@@ -16,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Set;
 
 @Component
 public class DbSeeder implements CommandLineRunner {
@@ -49,8 +48,8 @@ public class DbSeeder implements CommandLineRunner {
     private void initBrand() {
         if (brandRepo.count() == 0) {
 
-            Arrays.stream(BrandName.values())
-                    .forEach(b -> {
+            Set<String> brands = Set.of("BMW", "AUDI", "VW");
+                    brands.forEach(b -> {
                         Brand brand = new Brand();
                         brand.setBrandName(b);
                         this.brandRepo.save(brand);
@@ -73,14 +72,14 @@ public class DbSeeder implements CommandLineRunner {
     private void initModel() {
         if (modelRepo.count() == 0) {
 
-            Arrays.stream(ModelName.values())
-                    .forEach(m -> {
+            Set<String> models = Set.of("X4", "Q5", "Q7");
+                   models .forEach(m -> {
                         Model model = new Model();
                         model.setModelName(m);
                         switch (m){
-                            case X4 -> model.setBrand(brandRepo.findByBrandName(BrandName.BMW).orElseThrow());
-                            case Q7 -> model.setBrand(brandRepo.findByBrandName(BrandName.AUDI).orElseThrow());
-                            case Q5-> model.setBrand(brandRepo.findByBrandName(BrandName.VW).orElseThrow());
+                            case "X4" -> model.setBrand(brandRepo.findByBrandName("BMW").orElseThrow());
+                            case "Q7" -> model.setBrand(brandRepo.findByBrandName("AUDI").orElseThrow());
+                            case "TOUAREG"-> model.setBrand(brandRepo.findByBrandName("VW").orElseThrow());
                         }
                         this.modelRepo.save(model);
                     });

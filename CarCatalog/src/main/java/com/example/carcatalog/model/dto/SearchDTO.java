@@ -1,8 +1,6 @@
 package com.example.carcatalog.model.dto;
 
-import com.example.carcatalog.model.enums.BrandName;
 import com.example.carcatalog.model.enums.FuelTypeName;
-import com.example.carcatalog.model.enums.ModelName;
 import com.example.carcatalog.model.enums.TransmissionName;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Positive;
@@ -20,8 +18,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class SearchDTO {
-    private ModelName modelName;
-    private BrandName brandName;
+    private String modelName;
+    private String brandName;
     @Positive(message = "Price should be positive.")
     private BigDecimal price;
     @Past(message = "Registration date should be in the past.")

@@ -12,15 +12,7 @@ spring:
     password: ${DB_PASS}
     username: ${DB_USER}
     url: jdbc:mysql://localhost:3306/CarCatalog?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC
-#logging:
-#  level:
-#    org:
-#      hibernate:
-#        type:
-#          descriptor: TRACE
-#        SQL: DEBUG
-#      nodeValue: WARN
-#    blog: WARN
+
 server:
   port: 8080
   error:

@@ -1,7 +1,6 @@
 package com.example.carcatalog.model.dto;
 
 import com.example.carcatalog.model.enums.FuelTypeName;
-import com.example.carcatalog.model.enums.ModelName;
 import com.example.carcatalog.model.enums.TransmissionName;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,7 @@ public class CarDTO {
     @NotBlank
     private String vinNumber;
     @NotNull(message = "You should select a model.")
-    private ModelName modelName;
+    private String modelName;
     @Positive(message = "Price should be positive.")
     private BigDecimal price;
     @Past(message = "Registration date should be in the past.")

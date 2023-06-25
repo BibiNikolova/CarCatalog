@@ -12,10 +12,8 @@ import com.example.carcatalog.repository.CarRepo;
 import com.example.carcatalog.repository.FuelTypeRepo;
 import com.example.carcatalog.repository.ModelRepo;
 import com.example.carcatalog.repository.TransmissionRepo;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Stream;
 

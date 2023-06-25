@@ -1,6 +1,5 @@
 package com.example.carcatalog.model.entity;
 
-import com.example.carcatalog.model.enums.ModelName;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,10 +16,8 @@ public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Enumerated(EnumType.STRING)
     @Column(unique = true, nullable = false)
-    private ModelName modelName;
+    private String modelName;
     @ManyToOne
     private Brand brand;
 
